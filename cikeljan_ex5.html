@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Lecture 05</title>
+</head>
+<body>
+    <section>
+        <h2>Star Wars</h2>
+        <ul id="star-wars"></ul>
+    </section>
+
+    <section>
+        <h2>Chat</h2>
+        <p>
+            <textarea id="chat" rows="10" cols="40" readonly></textarea>
+        </p>
+        <p>
+            <input type="text" id="chat-input">
+        </p>
+    </section>
+
+    <section>
+        <h2>Mapy.cz</h2>
+        <ul id="mapy"></ul>
+    </section>
+
+    <script>
+        /*
+            urls:
+                HTTP API with JSON response of StarWars characters
+                    https://swapi.co/api/people/
+                WebSocket API with text messages
+                    ws://salty-peak-74076.herokuapp.com/
+                HTTP API with XML response of places matching given query
+                    https://api.mapy.cz/geocode?query=praha
+
+            Main tasks
+                1. Use XMLHttpRequest to create HTTP request and get data from StarWarsApi
+                    1. Parse StarWars data
+                    2. Transform the data into list of character names
+                        ["Luke Skywalker", "C-3PO", ...]
+                    3. Render character names into the list - <ul id="star-wars"></ul>
+                2. Create function that fetches data with XMLHttpRequest but exposes Promises interface.
+                    myRequest(url)
+                        .then(response => {
+                            // ok state
+                        })
+                        .catch(error => {
+                            // error states
+                        })
+
+                    1. For rendering the Star-Wars characters - switch from XMLHttpRequest to your "myRequest" function
+                3. Try to use browser's fetch API
+                    1. For rendering the Star-Wars characters - try to switch to browsers fetch API
+                4. Try to use async/await for interaction with
+                    1. myRequest
+                    2. fetch
+
+            Bonus Tasks
+                1. Websocket chat
+                    1. Connect to WebSocket API
+                    2. When messages comes in, render it to the - <textarea id="chat">
+                    3. When user types in text in <input type="text" id="chat-input"> and presses enter, send the message to the chat
+                2. Mapy.cz API with XML response
+                    1. Fetch the data, the idea is the same, except we get XML instead of JSON as a response
+        */
+
+
+       
+
+        function renderingStarWars (data) {
+            
+            var starWarsEl = document.querySelector('#star-wars');
+            var characters  = data.results;
+            // targetEl.innerHTML = ''
+
+                for (var i = 0; i < characters.length; i++) {
+                    var character = characters[i];
+                    var name = document.createElement('li');
+                    name.appendChild(document.createTextNode(character.name));
+
+                    // Append name to the page
+                    starWarsEl.appendChild(name);
+                }
+            }
+
+
+        function reqListener () {
+          var dataJSON = JSON.parse(this.responseText);
+          
+          //console.log(dataJSON)
+          
+          renderingStarWars(dataJSON);
+        }
+
+
+       // Request with XMLHttpRequest
+
+
+        var xhttp = new XMLHttpRequest();
+        //xhttp.addEventListener("readystatechange", /* ... */);
+        xhttp.addEventListener("load", reqListener);
+        
+
+        xhttp.open("GET", "https://swapi.co/api/people/", true);
+        xhttp.send();
+
+       // XMLHttpRequest  with promise
+
+        function myRequest (url) {
+            return new Promise(function(resolve, reject) {
+          // do a thing, possibly async, then…
+                var xhttp = new XMLHttpRequest();
+                
+
+                /* everything turned out fine */
+                xhttp.addEventListener("load", e => {
+                        resolve(e);
+                });
+                /*something broked */
+                xhttp.addEventListener("error", e => {
+                    reject(e);
+                });
+                xhttp.open("GET", "https://swapi.co/api/people/", true);
+                xhttp.send();
+            });
+        }
+
+
+
+        // myRequest("https://swapi.co/api/people/")
+        //     .then(p => {var dataJSON = JSON.parse(p.target.responseText); // target ???
+          
+        //   //console.log(dataJSON)
+        //   var starWarsEl = document.querySelector('#star-wars');
+        //   renderingStarWars(dataJSON,starWarsEl);})
+        //   //.then(reqListener)  ??? mohli by ste mi vysvetlit proc takhle neposilam zadne data funkci reqListener ako this ? a jak by to slo opravit ?
+                
+        //     .catch(error => {
+        //         console.log(error);
+        //                     // error states
+        //     }
+        //     );
+
+
+        //fectch API star wars
+
+         // fetch("https://swapi.co/api/people/")
+         //     .then(response => {
+         //        return response.json();
+         //        })
+         //     .then(renderingStarWars)
+         //     .catch(e => console.log(e));
+
+
+
+
+         //websocket chat
+         var textarea = document.querySelector("#chat");
+         var socket = new WebSocket("ws://salty-peak-74076.herokuapp.com/");
+         socket.onmessage = function(e) {
+                    textarea.value += e.data + "\n";
+        }
+
+        var input = document.querySelector("#chat-input");
+        input.addEventListener("keydown", e => {
+            if (e.key == "Enter") {
+
+                socket.send(e.target.value);
+            }
+        });
+
+        //mapy.cz
+        // neviem presne ake url mam pouzit, ked som pouzila sk.mapy.cz/zakladni? tak mi pisalo ze acces blocked by cors policy, a neviem ako to obist
+
+        // fetch("https://sk.mapy.cz/zakladni?")
+        //      .then(response => response.text())
+             
+        //      .catch(e => console.log(e));
+
+
+
+
+        
+
+        
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>
