@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Lecture 06</title>
+
+        <style type="text/css">
+            
+            #menu-control {
+                display: none;
+            }
+            #menu-control-input {
+                display: none;
+            }
+
+            #menu ul {
+                margin: 0;
+                padding: 0;
+            }
+            #menu {
+                    
+                counter-reset: item;
+             }
+
+
+            #menu li {
+                /*float: left; doesn't do space after each li*/ 
+                display: inline-block;
+                background-color: #000000;
+            }
+
+            #menu li:nth-child(2n) {
+                background-color: #A9A9A9;
+            }
+            #menu a {
+                display: inline-block;
+                padding: 5px 20px;
+                text-decoration: none;
+                color: #ffffff;
+            }
+            #menu li a::before {
+                counter-increment: item;
+                content: counter(item) ") ";
+                color: #ffffff;
+            }
+                
+            
+            #menu a::after {
+                content: " " attr(data-state);
+                color: #FF0000;
+            }
+
+
+            @media all and (max-width: 500px) {
+                #menu-control {
+                    display: block;
+                }
+
+                #menu {
+                    display: block;
+                    
+                }
+
+                #menu li {
+                    display: block;
+                }
+                #menu-control-input:checked + #menu { display: none;}
+
+       
+            }
+
+            /*custom designed checkbox*/
+            #custom-checkbox-input {
+                display: none;
+            }
+
+             #custom-checkbox {
+                
+                width: 80px;
+                height: 30px;
+                border-radius: 20px;
+                background: #B0E0E6;
+                position: relative;
+                display: block;
+                
+            }
+
+            #custom-checkbox::before {
+                position: absolute;
+                content: " ";
+                display:block;
+                width: 30px; /* create circle*/
+                height: 30px;
+                border-radius: 20px;
+                background: #FF0000;
+                left: 0;
+                right: auto;
+
+                
+            }
+
+            
+            #custom-checkbox-input:checked + #custom-checkbox::before {/*change custo-checkbox::before when checkbox checked*/
+                left: auto;
+                right: 0;
+                background: #9ACD32;
+            }
+
+
+
+
+        </style>
+    </head>
+    <body>
+        <!--
+            1. Create horizontal menu with design you can see on reseni.html.- done
+            2. For page width smaller than 500px, change menu design from row to column (see reseni.html). -done
+            3. Style <input type="checkbox" id="burgerControl" />
+                1. You cannot style checkboxes, but you can have label connected to checkbox, style the label and hide the checkbox. -done
+                2. Make it visible only on page size smaller than 500px. -done
+                3. If checkbox is checked, make #menu visible, otherwise hide it, but only on smaller page sizes. -done
+            4. For items with "data-state" attribute, write value of this attribute into the page - use only CSS. -done
+            5. Add counter to menu items with CSS counters. -done
+            6. Make even menu items have different background. -done
+
+            7. Make custom design for checkbox like on reseni.html.
+        -->
+
+        <h2>Menu</h2>
+
+        <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
+        <nav id="menu">
+            <ul>
+                <li><a href="#first" data-state="new!">First</a></li>
+                <li><a href="#second">Second</a></li>
+                <li><a href="#third">Third</a></li>
+                <li><a href="#fourth">Fourth</a></li>
+                <li><a href="#fifth">Fifth</a></li>
+            </ul>
+        </nav>
+
+        <h2>Custom Design Checkbox</h2>
+
+        <input id="custom-checkbox-input" type="checkbox">
+        <label id="custom-checkbox" for="custom-checkbox-input"></label>
+    </body>
+</html>
