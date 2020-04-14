@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Lecture 04 - Keyboard</title>
+        <style>
+            body, html { height:100%; font-family: Arial; }
+            div {
+                background: red; width:200px; height:200px; position:absolute; top:20px; left:40px;
+                border-radius: 50%;
+                box-sizing: border-box;
+                text-align: center;
+                padding-top:80px;
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            div a {
+                color: white;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div><a href="http://www.seznam.cz">SEZNAM</a></div>
+        <script>
+            // create M class via prototype or ES6 class
+            // constructor params x,y - initial position of red circle on page
+
+            // 1. write code for moving circle on page via keyboard keys up, down, etc... - done
+
+            // 2. use handleEvent -done
+
+            // 3. log mouse position to console -done
+
+            // 4. show confirm before using link's href -done
+
+            // 5. stopPropagating on circle to avoid logging mouseposition, also investigate useCapture option -done
+
+            // 6. try create some Promise resolved, rejected -done
+
+            // 7. try async and await // not sure how get context of file when it is not running on server, if i did it according to local path
+            // that would work only in my computer, scince the path would be different on your device
+
+            
+
+            var M = function (x,y) {
+                //document.body.addEventListener('keydown', this._keydown.bind(this))
+                document.body.addEventListener('keydown', this);
+                document.body.addEventListener("click", this);
+                this.element = document.querySelector('div');
+                this.element.addEventListener("click", this._stop.bind(this), false);
+                this.element.style.top = y+'px';
+                this.element.style.left = x+'px';
+                this._tId = null;
+
+            }
+
+
+            M.prototype._keydown = function (e) {
+
+                var c = e.code
+                console.log(c)
+                console.log(this)
+                switch(c){
+                        case "ArrowLeft": //left arrow key
+                            this.element.style.left = parseInt(this.element.style.left) - 5 + 'px'
+                            break;
+                        case "ArrowUp": //Up arrow key
+
+                            this.element.style.top = parseInt(this.element.style.top) - 5 + 'px'
+                            break;
+                        case "ArrowRight": //right arrow key
+                            this.element.style.left = parseInt(this.element.style.left) + 5 + 'px'
+                            break;
+                        case "ArrowDown": //down arrow key
+                            this.element.style.top = parseInt(this.element.style.top) + 5 + 'px'
+                            break;
+                        }
+
+            }
+
+            // move circle
+            M.prototype._move = function (dir, mv) {
+
+            }
+
+            // log mouse position
+            M.prototype._logPosition = function (e) {
+                console.log("position")
+                
+                console.log(("x: " + e.clientX), ("y:" + e.clientY));
+                      
+                
+
+            }
+
+            // showConfirm for links
+            M.prototype._showConfirm = function (e) {
+                if (!confirm("Opravdu chcete přejít na odkaz:" + e.target.href +" ?")) {
+                    e.preventDefault(e);
+                }
+
+            }
+
+
+            // handleEvent function look at constructor
+            M.prototype.handleEvent = function (e) {
+                
+                if (e.type == "keydown") {
+                    console.log(this)
+                    this._keydown(e);
+                }
+                if (e.type == "click") {
+                    if (e.target.nodeName.toLowerCase() == "a") {
+                            this._showConfirm(e);
+                    }
+                    this._logPosition(e);
+                }
+            }
+
+             M.prototype._stop = function (e) {
+                e.stopPropagation();
+            }
+
+
+
+            const p = new Promise( (resolve,reject) => {
+                setTimeout(() => {
+                    resolve("Promise action");
+                }, 5000);
+
+            });
+            p.then( (val) => console.log(val) )
+
+
+
+
+
+
+
+
+            var m = new M(100,100);
+
+        </script>
+    </body>
+</html>
