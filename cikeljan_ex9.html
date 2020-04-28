@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Lecture 09</title>
+
+        <style>
+            section {
+                display: inline-block;
+            }
+
+            svg {
+                background: lightblue;
+                width: 500px;
+                height: 500px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h2>Test</h2>
+
+        <svg viewbox="0 0 500 500", id="firstBox">
+            <!-- <rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"/>
+             <polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"
+      stroke="green" fill="transparent" stroke-width="5"/> 
+      <path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"/>
+  -->
+
+            <circle cx="250" cy="250" r="200" stroke="yellow" fill="yellow" stroke-width="5"/>
+            <circle cx="180" cy="200" r="30" stroke="black" fill="black" stroke-width="5"/>
+            <circle cx="320" cy="200" r="30" stroke="black" fill="black" stroke-width="5"/>
+           <path d="M150,320 C 190 390, 310 390, 350 320" fill="none" stroke="black" stroke-width="10"/> <!-- can use createTestPath function instead... C - bezier curve --> 
+
+        </svg>
+
+        <h2>SVG Paint</h2>
+        <ul>
+            <li>LMB &ndash; draw</li>
+            <li>Ctrl/Cmd + Left mouse button &ndash; new path + draw</li>
+            <li>Shift + Left mouse button &ndash; clear</li>
+        </ul>
+
+        <svg id="svg1"></svg>
+
+        <script>
+
+            /*
+                Docs
+                    Positions
+                        https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Positions
+                    Basics
+                        https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes
+                    Paths
+                        https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+                    Bezier curves
+                        https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+                    Fills and strokes
+                        https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Fills_and_Strokes
+
+                Excercises
+                    1. Take a look a the docs
+                    2. Draw some basic shapes
+                    3. Play with "viewbox"
+                    4. Draw line paths
+                        - use path element
+                        - try to create it with createElementNS and setAttributeNS
+                    5. Draw bezier paths
+                    6. Draw smiley face
+                    7. Create SVG painter class
+                        a. Listen on svg wrapper click events
+                        b. Draw circle at the position of each click
+                        c. Draw svg path where user clicked
+                        d. Create new path with ctrl/cmd + left mouse button
+                        e. Clear svg with shift + left mouse button
+            */
+            function createTestPath() {
+                testpath = document.createElementNS('http://www.w3.org/2000/svg',"path");  
+                testpath.setAttributeNS(null, "stroke", "black");
+                testpath.setAttributeNS(null, "stroke-width", "10");
+                testpath.setAttributeNS(null, "d", "M150,320 C 190 390, 310 390, 350 320");
+                document.getElementById("firstBox").appendChild(testpath);
+            }
+
+
+            class SvgPaint {
+                constructor(target) {
+                    this.svgWrap = document.querySelector(target);
+                    this.svgNs = "http://www.w3.org/2000/svg";
+                    this.path = 'none'
+                    this.svgWrap.addEventListener("click", e => this.click(e));
+                }
+
+                click(e) {
+                
+
+                    if (e.ctrlKey || e.metaKey) {
+                        this.path = 'none'
+                    } else if (e.shiftKey) {
+                        this.clear();
+                        return;     
+                    }
+
+                    this.drawPath(e);
+                }
+
+
+                drawPath(e){ 
+                    const x = e.offsetX;
+                    const y = e.offsetY;
+                    var d;
+                    console.log(this.path);
+                    this.drawCircle(x,y);
+
+                    if (this.path == 'none') {
+                        const path = document.createElementNS(this.svgNs, "path");
+                        path.setAttributeNS(null, "stroke", "black");
+                        path.setAttributeNS(null, "stroke-width", "5px");
+                        path.setAttributeNS(null, "fill", "transparent");
+
+                        this.svgWrap.appendChild(path);
+                        this.path = path;
+                         d = `M ${x} ${y}`;
+
+                    } else {
+                        d = this.path.getAttributeNS(null, "d");
+                        d += ` L ${x} ${y}`;
+                    }
+
+                    
+                    console.log("d", d);
+                    this.path.setAttributeNS(null, "d", d);
+                }
+
+                clear() {
+                    this.svgWrap.innerHTML = "";
+                    this.path = 'none';
+                }
+
+                drawCircle(x, y) {
+                    const circle = document.createElementNS(this.svgNs, "circle");
+                    circle.setAttributeNS(null, "cx", x);
+                    circle.setAttributeNS(null, "cy", y);
+                    circle.setAttributeNS(null, "r", "3");
+                    circle.setAttributeNS(null, "fill", "red");
+                    this.svgWrap.appendChild(circle);
+                }
+
+
+            }
+            new SvgPaint("#svg1");
+
+            //this.createTestPath(); 
+        </script>
+
+    </body>
+</html>
+

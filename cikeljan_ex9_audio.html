@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+ <html>
+
+     <body>
+     	<h1>Click anywhere to start/stop playing theremin</h1>
+     	<script>
+     		
+
+	     		const ctx = new window.AudioContext(); // zvukovy context
+	     		let oscillator = ctx.createOscillator(); // oscilator
+				const gain = ctx.createGain();
+				gain.connect(ctx.destination); // gain je vystup
+
+				const maxFreq = 3000;
+				const maxVol = 0.1;
+
+				const WIDTH = window.innerWidth; //plati na celej vyske a sirke stranky
+				const HEIGHT = window.innerHeight;
+
+                let actucalFreq = 0;
+                let actucalVol = 0;
+				let oscillatorRun = false;
+
+				// nastavime hodnoty oscilatoru
+				function initOscillator (freq, volume) {
+					
+					oscillator = ctx.createOscillator();
+					oscillator.connect(gain);
+					oscillator.type =  'sine';
+					gain.gain.value = volume;
+					oscillator.frequency.value = freq 
+					oscillator.start(0);
+					oscillatorRun = true;
+					console.log("start")
+				}
+
+				
+				// change volume and frequency according to y and x coordinates
+				function play(e) {
+					//console.log("e.clinetX")
+
+				    actucalFreq = oscillator.frequency.value = (e.clientX/WIDTH) * maxFreq;
+				    actucalVol = gain.gain.value = (e.clientY/HEIGHT) * maxVol;
+				}
+
+				// vypinani a zapinani
+				function toggle (e) {
+					if(oscillatorRun) {
+						oscillator.disconnect(gain);
+						oscillator.stop(0);  // vypnuti znamena zruseni oscilatoru
+						oscillatorRun = false;
+					} else {
+						
+						initOscillator( actucalFreq, actucalVol);
+						
+					}
+				}
+
+				document.addEventListener("click", toggle);
+				document.addEventListener("mousemove", play);
+			
+     	</script>
+
+     </body>
+</html>
