@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shooter</title>
+    </head>
+    <style media="screen">
+        canvas {
+            background: #efefef;
+            border: 3px groove black;
+            box-shadow: 2px 2px 3px #a0a0a0;
+            cursor: crosshair;
+        }
+    </style>
+    <body>
+        <canvas width="800" height="800"></canvas>
+        <script type="text/javascript">
+            /*
+                1. study
+                    - CheatSheet https://simon.html5.org/dump/html5-canvas-cheat-sheet.html
+                    - MDN Canvas https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API
+
+                2. create shooter game
+                    - draw background
+                    - start drawing with request animation frame
+                    - use ships array and render ships to canvas
+                    - make them moving from bottom to top with various speed
+                    - when they fly out of the screen, reposition them to the bottom
+                    - add event listener to catch mouse click position
+                    - calculate if ship was clicked
+                    - destroy ship with click
+                    - add sounds
+            */
+
+            // global config
+            const speedMultiplier = 0.1;
+
+            // some constanst
+            const canvas = document.querySelector('canvas');
+            const ctx = canvas.getContext('2d');
+            const WIDTH = canvas.offsetWidth; //The offsetWidth property returns the viewable width of an element in pixels, including padding, border and scrollbar, but not the margin.
+            const HEIGHT = canvas.offsetHeight;
+            console.log(HEIGHT);
+
+            //load sounds
+            const explosionSound = new Audio("explosion.mp3");
+            const missSound = new Audio("miss.mp3");
+
+            // load images
+            const backgroundImg = new Image();
+            backgroundImg.src = "space.jpg";
+            const shipImg = new Image();  // 128 x 128
+            shipImg.src = "spaceship_sprite.png";
+
+            // game state
+            let ships = [
+                { x: 30, y:HEIGHT, speed: 1.0 },
+                { x: 80, y:HEIGHT, speed: 0.5 },
+                { x:150, y:HEIGHT, speed: 0.3 },
+                { x:200, y:HEIGHT, speed: 0.6 },
+                { x:300, y:HEIGHT, speed: 0.8 },
+                { x:450, y:HEIGHT, speed: 2.0 },
+                { x:600, y:HEIGHT, speed: 1.0 },
+                { x:700, y:HEIGHT, speed: 0.3 },
+                { x:800, y:HEIGHT, speed: 1.5 }
+            ]
+
+
+            function handleClick(e) {
+                //make sure that all sounds stops when clicking again
+                missSound.pause();
+                missSound.currentTime = 0;
+                explosionSound.pause();
+                explosionSound.currentTime = 0;
+
+                const x = e.offsetX;
+                const y = e.offsetY;
+                ships = ships.filter(ship => { // The filter() method creates an array filled with all array elements that pass a test (provided as a function).
+                    if ((x >= ship.x && x <= ship.x + shipImg.width) &&
+                        (y >= ship.y && y <= ship.y + shipImg.height)
+                    ) {
+                        explosionSound.play();
+                        return false;
+                    } else {
+                        missSound.play();
+                        return true;
+                    }
+                });
+            }
+
+
+
+            // draw space ship
+            function drawShip (ship, dt, t) {
+                
+                if (ship.y < -128) { //size of ship, so whole ship dissapears
+                    ship.y = HEIGHT;
+                } else {
+                    ship.y -= dt * ship.speed * speedMultiplier;
+                }
+                ship.x += Math.sin(t / 200) * ship.speed*2; //move from side to side, harder to catch
+                ctx.drawImage(shipImg, ship.x, ship.y);
+                
+            }
+                        // draw stars
+
+            var T = Date.now();
+
+            var draw = function() {
+
+                var t = Date.now();
+                dt= (t- T) ; 
+                T = t;
+                ctx.clearRect(0, 0, WIDTH, HEIGHT); //have to provide 4 arguments
+                ctx.drawImage(backgroundImg, 0, 0);
+
+                ships.forEach(ship => {
+                    drawShip(ship, dt, t);
+                });
+                requestAnimationFrame(draw);
+            }
+
+            canvas.addEventListener("click", handleClick); 
+            draw();
+        </script>
+    </body>
+</html>
